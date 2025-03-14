@@ -1,0 +1,6 @@
+fastapi==0.99.1
+uvicorn
+requests
+python-dotenv
+jinja2
+mangum

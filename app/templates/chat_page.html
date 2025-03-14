@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link rel="icon" href="{{ url_for('static', path='favicon.png') }}" type="image/png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #chatContainer {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 80vh;  /* Set height for the chat container */
+        }
+        #messages {
+            list-style-type: none;
+            padding: 10px;
+            overflow-y: auto;
+            flex-grow: 1;  /* Allow messages to take up available space */
+            margin: 0;
+        }
+        #messages li {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            color: #fefffe;  /* Text color for better contrast */
+        }
+        .me {
+            background-color: #34d5f1;  /* Blueish color for "Me" messages */
+            text-align: right;
+        }
+        .ai {
+            background-color: #f98f9d;  /* Pinkish color for "AI" messages */
+            text-align: left;
+        }
+        #inputContainer {
+            display: flex;
+            padding: 10px;
+        }
+        #messageInput {
+            flex-grow: 1;  /* Allow input to take up available space */
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #sendButton {
+            padding: 10px;
+            border: none;
+            background-color: #8180a0;  /* Button color */ 
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        #sendButton:hover {
+            background-color: #626088;  /* Darker blue on hover */
+        }
+    </style>
+</head>
+<body>
+    <div id="chatContainer">
+        <h1 style="text-align: center;">
+            <img src="{{ url_for('static', path='favicon.png') }}" alt="Chat Icon" style="width: 30px; vertical-align: middle;">  Chatbot.AI
+        </h1>
+        <ul id="messages"></ul>
+        <div id="inputContainer">
+            <input id="messageInput" type="text" placeholder="Type a message...">
+            <button id="sendButton" onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+    <script>
+        const ws = new WebSocket("ws://localhost:8000/ws");
+        ws.onmessage = function(event) {
+            const messages = document.getElementById("messages");
+            const message = document.createElement("li");
+            message.textContent = event.data;
+            message.className = 'ai';  // Add class for AI messages
+            messages.appendChild(message);
+            messages.scrollTop = messages.scrollHeight;  // Auto-scroll to the bottom
+        };
+        
+        function sendMessage() {
+            const input = document.getElementById("messageInput");
+            const message = document.createElement("li");
+            message.textContent = `Me: ${input.value}`;  // Add "Me: " to the beginning of the message
+            message.className = 'me';  // Add class for user messages
+            document.getElementById("messages").appendChild(message);
+            ws.send(input.value);  // Send the message to the WebSocket server
+            input.value = '';  // Clear the input field
+            document.getElementById("messages").scrollTop = document.getElementById("messages").scrollHeight;  // Auto-scroll to the bottom
+        }
+
+        // Add event listener for the Enter key
+        document.getElementById("messageInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
