@@ -19,8 +19,8 @@ A FastAPI-based local server that provides a chat interface powered by OpenRoute
 
 1. Clone the repository:
    ```bash
-   git clone [your-repo-url]
-   cd ai-chatbot-local-server
+   git clone https://github.com/IdanDavidOr/AI_Chatbot_Local_Server.git
+   cd AI_Chatbot_Local_Server
    ```
 
 2. Create a virtual environment (optional but recommended):
